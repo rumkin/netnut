@@ -1,0 +1,9 @@
+name: install_hao
+require:
+    - install_nvm
+    - install_node
+actions:
+    - exec: |
+        . ~/.nvm/nvm.sh
+        nvm use {{ node_version }}
+        npm install hao -g

@@ -1,0 +1,49 @@
+
+main:
+    - label: ls
+      exec: ls $HOME -la
+  # - label: install nvm
+  #   task: install_node
+
+  # - label: install node version
+  #   task: install_nodejs
+  #
+  # - label: install hao
+  #   task: install_hao
+  #
+  # - label: install docker
+  #   task: install_docker
+  #
+  # - label: install mongo and redis containers
+  #   exec:
+  #       - docker pull mongo
+  #       - docker pull redis
+
+test-env:
+    - label: set env
+      env: name = Pako
+
+    - label: echo name
+      exec: echo $CLIENT_NAME
+
+    - label: get node version
+      exec: node -v
+
+install:
+    - label: Install node version manager
+      task: install_nvm
+
+    - label: Install latest nodejs version
+      task: install_nodejs
+
+    - label: Install Hao application manager
+      task: install_hao
+
+    # - label: Install nvm
+    #   task: install_nvm
+    #
+    # - label: Install node
+    #   task: install_node
+    #
+    # - label: Install hao
+    #   task: install_hao

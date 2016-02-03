@@ -1,0 +1,3 @@
+web_port: 1055
+web_host: test.cuberto.com
+node_version: 5.5

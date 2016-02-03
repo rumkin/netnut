@@ -1,0 +1,10 @@
+name: test_task
+params:
+    test_param: 5
+    node_version: 5
+actions:
+    - label: Run test task
+      exec: echo {{ test_param }}
+
+    - label: Run test task
+      exec: echo {{ node_version }}

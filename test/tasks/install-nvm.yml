@@ -1,0 +1,9 @@
+name: install_nvm
+params:
+    nvm_version: 0.30.2
+actions:
+    - exec: |
+        if [ ! -d "$HOME/.nvm" ]; then
+            wget -qO- https://raw.githubusercontent.com/creationix/nvm/v{{ nvm_version }}/install.sh | bash
+        fi
+    - hello: 1

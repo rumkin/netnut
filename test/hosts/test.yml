@@ -1,0 +1,6 @@
+type: ssh
+connection:
+  host: 127.0.0.1
+  port: 2222
+  username: test
+  password: test

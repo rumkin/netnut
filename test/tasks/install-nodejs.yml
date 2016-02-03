@@ -1,0 +1,7 @@
+name: install_nodejs
+params:
+    node_version: 5
+require:
+    - install_node
+actions:
+    - exec: . ~/.nvm/nvm.sh; nvm install {{ node_version }}
