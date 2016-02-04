@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var glob = require('glob');
 var argentum = require('argentum');
 var Netnut = require('./src/netnut.js');
@@ -14,7 +16,7 @@ args = Object.assign({
 
 var options = {
     debug: args.debug,
-    books: globload('playbooks'),
+    books: globload('books'),
     roles: globload('roles'),
     hosts: globload('hosts'),
     tasks: globload('tasks'),

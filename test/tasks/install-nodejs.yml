@@ -1,7 +1,9 @@
 name: install_nodejs
 params:
-    node_version: 5
-require:
-    - install_node
+    node_version: 5.5.0
+    os_arch: x64
 actions:
-    - exec: . ~/.nvm/nvm.sh; nvm install {{ node_version }}
+    - exec: >
+        wget -xO node.tar.gz https://nodejs.org/dist/v{{ node_version }}/node-v{{ node_version }}-linux-{{ os_arch }}.tar.gz
+        && sudo tar -xzf node.tar.gz -C /usr/local --strip-components=1
+        && rm node.tar.gz

@@ -34,6 +34,9 @@ function Netnut(options_) {
     this.compiler = options.compiler || new expr.Compiler();
 }
 
+Netnut.LocalShell = LocalShell;
+Netnut.SshShell = SshShell;
+
 Netnut.prototype.run = function (hostName, roleName, bookName, taskName) {
     var host = this.getHost(hostName);
     var role = this.getRole(roleName);
@@ -100,7 +103,7 @@ Netnut.prototype.createLocalShell = function (role) {
     if (this.debug) {
         shell.on('exec', (cmd) => console.error(cmd));
     }
-    
+
     return shell;
 };
 

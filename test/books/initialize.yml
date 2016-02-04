@@ -30,9 +30,6 @@ test-env:
       exec: node -v
 
 install:
-    - label: Install node version manager
-      task: install_nvm
-
     - label: Install latest nodejs version
       task: install_nodejs
 

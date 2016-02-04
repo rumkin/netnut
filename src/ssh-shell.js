@@ -4,6 +4,7 @@ var _ = require('underscore');
 var Shell = require('./shell.js');
 var ssh2 = require('ssh2');
 var path = require('path');
+var fs = require('fs');
 
 module.exports = SshShell;
 
@@ -20,8 +21,14 @@ function SshShell(options) {
       if (options.privateKey === true) {
         options.privateKey = process.env.HOME + '/.ssh/id_rsa'
       } else {
-        options.pivateKey = path.resolve(process.cwd(), options.privateKey);
+        options.privateKey = path.resolve(process.cwd(), options.privateKey);
       }
+
+      options.privateKey = fs.readFileSync(options.privateKey, 'utf8');
+    }
+
+    if (options.debug) {
+        options.debug = (log) => console.log(log);
     }
 }
 
@@ -41,7 +48,13 @@ SshShell.prototype.open = function () {
             this.emit('opened');
         })
         .connect(_.pick(this.options, [
-            'host', 'port', 'username', 'password'
+            'host',
+            'port',
+            'username',
+            'password',
+            'privateKey',
+            'passphrase',
+            'debug',
         ]));
     });
 };
