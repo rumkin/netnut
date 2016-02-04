@@ -1,0 +1,3 @@
+plugins:
+    - label: Test output plugin
+      log: Hello, world

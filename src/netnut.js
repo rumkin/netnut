@@ -240,3 +240,60 @@ Netnut.prototype.getTaskCommand = function (task, stack) {
         }
     }
 };
+
+Netnut.prototype.getCommand = function (name) {
+    var command = this.findCommand(name);
+    if (! command) {
+        throw new Error(`Command ${name} not exists`);
+    }
+
+    return command;
+};
+
+Netnut.prototype.findCommand = function (name) {
+    return this.commands[name];
+};
+
+Netnut.prototype.setCommand = function (name, value) {
+    if (name in this.commands) {
+        throw new Error(`Command ${name} already exists`);
+    }
+
+    if (typeof value !== 'function') {
+        throw new Error('Executable is not a function');
+    }
+
+    this.commands[name] = value;
+};
+
+Netnut.prototype.setBook = function (name, value) {
+    if (name in this.books) {
+        throw new Error(`Book ${name} already exists`);
+    }
+
+    this.books[name] = value;
+};
+
+Netnut.prototype.setTask = function (name, value) {
+    if (name in this.tasks) {
+        throw new Error(`Task ${name} already exists`);
+    }
+
+    this.tasks[name] = value;
+};
+
+Netnut.prototype.setRole = function (name, value) {
+    if (name in this.roles) {
+        throw new Error(`Role ${name} already exists`);
+    }
+
+    this.roles[name] = value;
+};
+
+Netnut.prototype.setHost = function (name, value) {
+    if (name in this.hosts) {
+        throw new Error(`Host ${name} already exists`);
+    }
+
+    this.hosts[name] = value;
+};
