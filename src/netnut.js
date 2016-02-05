@@ -41,8 +41,23 @@ Netnut.prototype.run = function (hostName, roleName, bookName, taskName) {
     var host = this.getHost(hostName);
     var role = this.getRole(roleName);
     var tasks = this.getBookTask(bookName, taskName);
+    var stack = [];
 
-    _.extend(this.context, role);
+    var session = {
+        host: hostName,
+        role: roleName,
+        book: bookName,
+        task: taskName,
+        context: _.extend({}, this.context, role),
+        stack,
+        netnut: this,
+        eval(value, locals) {
+            locals = Object.assign({}, locals);
+            Object.setPrototypeOf(locals, this.context);
+
+            return this.netnut.eval(value, locals);
+        }
+    };
 
     return Promise.all([
         this.createLocalShell().open(),
@@ -50,7 +65,8 @@ Netnut.prototype.run = function (hostName, roleName, bookName, taskName) {
     ]).spread((local, remote) => {
         this.shells = {local, remote};
 
-        var stack = tasks.slice();
+        stack.push(...tasks);
+
         var loop = (error) => {
             if (error) {
                 throw error;
@@ -67,7 +83,7 @@ Netnut.prototype.run = function (hostName, roleName, bookName, taskName) {
                 console.log(chalk.green('start'), chalk.bold(task.label));
             }
 
-            var result = this.getTaskCommand(task, stack);
+            var result = this.getTaskCommand(task, session);
 
             if (! (result instanceof Promise)) {
                 result = Promise.resolve(result);
@@ -160,11 +176,11 @@ Netnut.prototype.getHost = function (name) {
 };
 
 Netnut.prototype.commands = {
-    exec(value, item) {
+    exec(value, item, session) {
         if (Array.isArray(value)) {
-            return this.shells.remote.batch(value.map(value => this.eval(value)));
+            return this.shells.remote.batch(value.map(value => session.eval(value)));
         } else {
-            value = this.eval(value);
+            value = session.eval(value);
             return this.shells.remote.exec(value).then((result) => {
                 if (this.debug) {
                     process.stdout.write(result.out + '');
@@ -177,8 +193,8 @@ Netnut.prototype.commands = {
             });
         }
     },
-    env(value, item) {
-        value = this.eval(value);
+    env(value, item, session) {
+        value = session.eval(value);
 
         var match = value.match(/^\s*(.+?)\s*=\s*(.+?)\s*$/);
 
@@ -193,39 +209,37 @@ Netnut.prototype.commands = {
         this.context[value]= value;
         this.shells.local.set(varname, val);
         this.shells.remote.set(varname, val);
-
-        console.log(varname, val)
     },
-    upload(value, item) {
+    upload(value, item, session) {
         var source, destination;
 
         if (typeof value === 'string') {
-            source = this.eval(value);
+            source = session.eval(value);
         } else {
-            source = this.eval(value.src);
-            destination = this.eval(value.dest);
+            source = session.eval(value.src);
+            destination = session.eval(value.dest);
         }
 
         source = path.resolve(this.cwd, source);
 
         return this.shells.remote.upload(source, destination);
     },
-    task(value, item, stack) {
-        value = this.eval(value);
+    task(value, item, session) {
+        value = session.eval(value);
         if (! (value in this.tasks)) {
             throw new Error(`Task ${value} not found`);
         }
 
-        stack.unshift(...this.tasks[value].actions);
+        session.stack.unshift(...this.tasks[value].actions);
         return;
     }
 };
 
 Netnut.prototype.eval = function (value, locals) {
-    return this.compiler.eval(value, _.extend({}, this.context, locals));
+    return this.compiler.eval(value, locals);
 };
 
-Netnut.prototype.getTaskCommand = function (task, stack) {
+Netnut.prototype.getTaskCommand = function (task, session) {
     var keys = _.keys(task);
     var i = -1;
     var l = keys.length;
@@ -236,7 +250,7 @@ Netnut.prototype.getTaskCommand = function (task, stack) {
         if (key in this.commands) {
             command = this.commands[key];
 
-            return command.call(this, task[key], task, stack);
+            return command.call(this, task[key], task, session);
         }
     }
 };

@@ -1,3 +1,7 @@
+# v0.3.0
+
+* Add basic sessions. 
+
 # v0.2.3
 
 * Add command line plugins loading.
