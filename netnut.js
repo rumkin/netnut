@@ -42,7 +42,7 @@ if (root) {
             if (plugin.includes(path.sep)) {
                 plugin = path.resolve(dir, plugin);
             }
-            
+
             if (!~plugins.indexOf(plugin)) {
                 plugins.push(plugin);
             }
@@ -66,7 +66,7 @@ plugins.forEach(plugin => {
         mod = require(plugin);
     }
 
-    mod(netnut, args);
+    mod.call(netnut, netnut, args);
 });
 
 netnut.run(

@@ -1,9 +1,10 @@
-# v0.2.2
+# v0.2.3
 
 * Add command line plugins loading.
 * Add `package.json` plugins loading.
 * Update appfile.
 * Update package.json plugins's path resolving.
+* Update plugins context.
 
 
 # v0.1.3
