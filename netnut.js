@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 var glob = require('glob');
 var argentum = require('argentum');
 var Netnut = require('./src/netnut.js');
@@ -28,7 +30,8 @@ var netnut = new Netnut(options);
 var plugins = [];
 var root = lookup.sync(__dirname, 'package.json');
 if (root) {
-    var pack = require(root);
+    let pack = require(root);
+    let dir = path.dirname(root);
 
     if (pack.config
         && pack.config.netnut
@@ -36,6 +39,10 @@ if (root) {
         && Array.isArray(pack.config.netnut.plugins)) {
 
         pack.config.netnut.plugins.forEach(plugin => {
+            if (plugin.includes(path.sep)) {
+                plugin = path.resolve(dir, plugin);
+            }
+            
             if (!~plugins.indexOf(plugin)) {
                 plugins.push(plugin);
             }
