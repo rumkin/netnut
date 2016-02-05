@@ -18,12 +18,12 @@ args = Object.assign({
 }, args);
 
 var context = {};
-if (Array.isArray(context)) {
-    context.forEach(pair => {
+if (Array.isArray(args.context)) {
+    args.context.forEach(pair => {
         if (! pair.includes('=')) {
             context[pair] = true;
         } else {
-            let match = pair.match(/^\s*(.*?)\s*=\s*(.*?)\s*$/);
+            let match = pair.match(/^\s*(.+?)\s*=\s*?(.*?)\s*$/);
             if (match) {
                 context[match[1]] = match[2];
             }
@@ -31,19 +31,19 @@ if (Array.isArray(context)) {
     });
 }
 
+var basedir = args.dir || process.cwd();
 var options = {
     debug: args.debug,
-    books: globload('books'),
-    roles: globload('roles'),
-    hosts: globload('hosts'),
-    tasks: globload('tasks'),
-    context
+    books: globload(path.join(basedir,'books')),
+    roles: globload(path.join(basedir,'roles')),
+    hosts: globload(path.join(basedir,'hosts')),
+    tasks: globload(path.join(basedir,'tasks')),
 };
 
 var netnut = new Netnut(options);
 
 var plugins = [];
-var root = lookup.sync(__dirname, 'package.json');
+var root = lookup.sync(process.cwd(), 'package.json');
 if (root) {
     let pack = require(root);
     let dir = path.dirname(root);
@@ -88,11 +88,15 @@ netnut.run(
     args.host,
     args.role,
     args.book,
-    args.task
+    args.task,
+    context
 ).then(() => {
     console.log('OK')
 }, (error) => {
-    console.error(error.stack);
+    console.error(args.debug
+            ? error.stack
+            : error.message
+        );
 })
 .then(() => netnut.stop());
 

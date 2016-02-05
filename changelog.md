@@ -1,7 +1,11 @@
-# v0.3.1
+# v0.3.5
 
 * Add basic sessions.
 * Add cli context configuration.
+* Fix lookup algorithm.
+* Update cli output on error.
+* Update context assign order.
+* Add session state flag `ended`.
 
 # v0.2.3
 

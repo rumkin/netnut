@@ -37,23 +37,23 @@ function Netnut(options_) {
 Netnut.LocalShell = LocalShell;
 Netnut.SshShell = SshShell;
 
-Netnut.prototype.run = function (hostName, roleName, bookName, taskName) {
+Netnut.prototype.run = function (hostName, roleName, bookName, taskName, context) {
     var host = this.getHost(hostName);
     var role = this.getRole(roleName);
     var tasks = this.getBookTask(bookName, taskName);
     var stack = [];
 
     var session = {
+        ended: false,
         host: hostName,
         role: roleName,
         book: bookName,
         task: taskName,
-        context: _.extend({}, this.context, role),
+        context: _.extend({}, this.context, role, context),
         stack,
         netnut: this,
         eval(value, locals) {
-            locals = Object.assign({}, locals);
-            Object.setPrototypeOf(locals, this.context);
+            locals = Object.assign({}, this.context, locals);
 
             return this.netnut.eval(value, locals);
         }
@@ -69,10 +69,12 @@ Netnut.prototype.run = function (hostName, roleName, bookName, taskName) {
 
         var loop = (error) => {
             if (error) {
+                session.ended = true;
                 throw error;
             }
 
             if (! stack.length) {
+                session.ended = true;
                 return;
             }
 
