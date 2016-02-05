@@ -17,12 +17,27 @@ args = Object.assign({
     task: 'main'
 }, args);
 
+var context = {};
+if (Array.isArray(context)) {
+    context.forEach(pair => {
+        if (! pair.includes('=')) {
+            context[pair] = true;
+        } else {
+            let match = pair.match(/^\s*(.*?)\s*=\s*(.*?)\s*$/);
+            if (match) {
+                context[match[1]] = match[2];
+            }
+        }
+    });
+}
+
 var options = {
     debug: args.debug,
     books: globload('books'),
     roles: globload('roles'),
     hosts: globload('hosts'),
     tasks: globload('tasks'),
+    context
 };
 
 var netnut = new Netnut(options);
