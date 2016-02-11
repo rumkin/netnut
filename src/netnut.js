@@ -238,7 +238,17 @@ Netnut.prototype.commands = {
 };
 
 Netnut.prototype.eval = function (value, locals) {
-    return this.compiler.eval(value, locals);
+    if (typeof value === 'string') {
+        return this.compiler.eval(value, locals);
+    } else if (value && typeof value === 'object') {
+        let result = new value.constructor;
+        _.keys(value).forEach(
+            k => result[k] = this.eval(value[k], locals)
+        );
+        return result;
+    } else {
+        throw new Error(`Invalid value: ${value}`);
+    }
 };
 
 Netnut.prototype.getTaskCommand = function (task, session) {

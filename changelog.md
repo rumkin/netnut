@@ -1,4 +1,17 @@
-# v0.3.5
+# v.0.3.7
+
+* Add deep object evaluation.
+* Add path configuration with `package.json`.
+* Add default layout:
+    * `$CWD/netnut`
+    * `config.netnut.dir` in `package.json`
+    * environment variable NETNUT_PATH
+    * cli argument `--dir`
+
+    Note that plugins from package.json will be loaded relative
+    to `package.json` dir.
+
+# v0.3.4
 
 * Add basic sessions.
 * Add cli context configuration.

@@ -1,9 +1,18 @@
-root = true
-
-[*]
+# Matches multiple files with brace expansion notation
+# Set default charset
+[*.js]
 charset = utf-8
 indent_style = space
 indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
 
+# Indentation for json files
 [*.json,*.yml,*.yaml]
+indent_style = space
+indent_size = 2
+
+# Matches the exact files either package.json or .travis.yml
+[{package.json,.travis.yml,.eslintrc,.syncrc}]
+indent_style = space
 indent_size = 2
