@@ -1,4 +1,19 @@
-# v.0.3.7
+# Changelog
+
+### v0.4
+* Change candy template substitution from `{{` and `}}` to `((` and `))`. It
+  solves yaml syntax conflict for inline objects. Now constructions
+  like `prop: (( var_name ))` will work. And even: `prop: {prop: (( variable )) }`.
+
+### v0.3.13
+* Add inline attributes parser.
+* Add `prompt` command.
+* Add `print` command.
+* Add `dump` command.
+* Update `env` command to use attributes.
+* Update session instance.
+
+### v0.3.7
 
 * Add deep object evaluation.
 * Add path configuration with `package.json`.
@@ -11,7 +26,7 @@
     Note that plugins from package.json will be loaded relative
     to `package.json` dir.
 
-# v0.3.4
+### v0.3.4
 
 * Add basic sessions.
 * Add cli context configuration.
@@ -20,7 +35,7 @@
 * Update context assign order.
 * Add session state flag `ended`.
 
-# v0.2.3
+### v0.2.3
 
 * Add command line plugins loading.
 * Add `package.json` plugins loading.
@@ -29,7 +44,7 @@
 * Update plugins context.
 
 
-# v0.1.3
+### v0.1.3
 
 * Fix ssh shell private key issue.
 * Add `.app` file and shebang.

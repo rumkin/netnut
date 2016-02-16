@@ -7,6 +7,8 @@ var expr = require('./expr.js');
 var LocalShell = require('./local-shell.js');
 var SshShell = require('./ssh-shell.js');
 var chalk = require('chalk');
+var attrParser = require('../lib/attrs-parser.js');
+var prompt = require('prompt');
 
 require('./promise-utils.js');
 
@@ -56,6 +58,25 @@ Netnut.prototype.run = function (hostName, roleName, bookName, taskName, context
             locals = Object.assign({}, this.context, locals);
 
             return this.netnut.eval(value, locals);
+        },
+        attrs(value) {
+            var result = {};
+
+            attrParser.parse(value).forEach(attr => {
+                result[attr.name] = attr.value;
+            });
+
+            return result;
+        },
+        set(name, value) {
+            var varname = (this.netnut.prefix + name).toUpperCase();
+
+            this.context[name]= value;
+            this.shells.local.set(varname, value);
+            this.shells.remote.set(varname, value);
+        },
+        get(name) {
+            return this.context[name];
         }
     };
 
@@ -64,6 +85,7 @@ Netnut.prototype.run = function (hostName, roleName, bookName, taskName, context
         this.createRemoteShell(host).open()
     ]).spread((local, remote) => {
         this.shells = {local, remote};
+        session.shells = this.shells;
 
         stack.push(...tasks);
 
@@ -198,19 +220,13 @@ Netnut.prototype.commands = {
     env(value, item, session) {
         value = session.eval(value);
 
-        var match = value.match(/^\s*(.+?)\s*=\s*(.+?)\s*$/);
+        var attrs = _.isObject(value)
+            ? value
+            : session.attrs(value);
 
-        if (! match) {
-            throw new Error(`Invalid value ${value}`);
-        }
-
-        var name = match[1];
-        var varname = (this.prefix + name).toUpperCase();
-        var val = match[2];
-
-        this.context[value]= value;
-        this.shells.local.set(varname, val);
-        this.shells.remote.set(varname, val);
+        _.keys(attrs).forEach((name) => {
+            session.set(name, attrs[name]);
+        });
     },
     upload(value, item, session) {
         var source, destination;
@@ -234,6 +250,57 @@ Netnut.prototype.commands = {
 
         session.stack.unshift(...this.tasks[value].actions);
         return;
+    },
+    prompt(value_, item, session){
+        var value = session.eval(value_); // Replace template placeholders.
+        var attrs;
+
+        if (_.isObject(value)) {
+            attrs = value;
+        } else {
+            attrs = session.attrs(value); // Split into attributes.
+        }
+
+        return new Promise((resolve, reject) => {
+            prompt.get({
+                properties: {
+                    [attrs.var]: {
+                        message: attrs.message
+                    }
+                }
+            }, function(err, result){
+                if (err) {
+                    reject(err);
+                } else {
+
+                    session.set(attrs.var, result[attrs.var] || attrs.default || '');
+                    resolve();
+                }
+            });
+        });
+    },
+    dump(value, task, session) {
+        var path = value.split('\.');
+        var target = session.context;
+
+        while (path.length) {
+            let segment = path.shift();
+            if (! (segment in target)) {
+                return;
+            }
+
+            if (!_.isObject(target[segment])) {
+                return;
+            }
+
+            target = target[segment];
+        }
+
+        console.log(target);
+    },
+    print(value, item, session) {
+        var attrs = session.attrs(session.eval(value));
+        console.log(attrs.text);
     }
 };
 
@@ -265,6 +332,8 @@ Netnut.prototype.getTaskCommand = function (task, session) {
             return command.call(this, task[key], task, session);
         }
     }
+
+    throw new Error('Unknown task');
 };
 
 Netnut.prototype.getCommand = function (name) {

@@ -27,9 +27,11 @@ function SshShell(options) {
       options.privateKey = fs.readFileSync(options.privateKey, 'utf8');
     }
 
-    if (options.debug) {
-        options.debug = (log) => console.log(log);
-    }
+    // if (options.debug) {
+    //     this.debug = (log) => console.log(log);
+    // } else {
+    //     this.debug= new Function();
+    // }
 }
 
 Object.setPrototypeOf(SshShell.prototype, Shell.prototype);

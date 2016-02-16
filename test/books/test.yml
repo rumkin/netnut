@@ -1,3 +1,20 @@
 plugins:
     - label: Test output plugin
       log: Hello, world
+
+prompt:
+    - env: user="User"
+    - env: {system: {user: (( user )) }}
+
+    - dump: system.user
+
+    - label: Get name value
+      #   prompt: var="(( var ))" message="Who are you?" value=""
+      prompt:
+        var: user
+        message: Who are you?
+        default: (( system.user ))
+      text: (( hello ))
+
+    - label: Output with attributes
+      print: text="Hello (( user ))"

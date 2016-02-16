@@ -20,7 +20,7 @@ if (args.v || args.version) {
 }
 
 args = Object.assign({
-    debug: false,
+    debug: process.env.DEBUG || false,
     role: 'test',
     task: 'main'
 }, args);

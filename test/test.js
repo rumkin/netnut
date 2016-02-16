@@ -5,7 +5,7 @@ var fs = require('fs');
 var chalk = require('chalk');
 
 var server = new ssh2.Server({
-    privateKey: fs.readFileSync('key'),
+    privateKey: fs.readFileSync(__dirname + '/key'),
     passphrase: 'password',
 }, (client) => {
     client.on('authentication', (ctx) => {
@@ -44,11 +44,13 @@ server.listen(2222, '127.0.0.1', () => console.log('Listening 2222'));
 var args = process.argv.slice(2);
 
 if (! args.length) {
-    args = ['--host=test', '--role=test', '--book=initialize', '--task=test-env', '--debug'];
+    // args = ['--host=test', '--role=test', '--book=initialize', '--task=test-env', '--debug'];
+    args = ['--host=test', '--role=test', '--book=test', '--task=prompt', '--dir=' + __dirname];
 }
 
 var child = spawn('node', ['../netnut.js', ...args], {
-    stdio: 'inherit'
+    stdio: 'inherit',
+    env: process.env
 });
 
 child.on('close', () => {

@@ -1,0 +1,6 @@
+type: ssh
+connection:
+  host: 185.14.187.57
+  port: 22
+  username: core
+  privateKey: ../.ssh/robin

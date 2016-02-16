@@ -4,6 +4,6 @@ params:
     os_arch: x64
 actions:
     - exec: >
-        wget -xO node.tar.gz https://nodejs.org/dist/v{{ node_version }}/node-v{{ node_version }}-linux-{{ os_arch }}.tar.gz
+        wget -xO node.tar.gz https://nodejs.org/dist/v(( node_version ))/node-v(( node_version ))-linux-(( os_arch )).tar.gz
         && sudo tar -xzf node.tar.gz -C /usr/local --strip-components=1
         && rm node.tar.gz

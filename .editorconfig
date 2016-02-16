@@ -8,7 +8,7 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 # Indentation for json files
-[*.json,*.yml,*.yaml]
+[*.json,*.yml,*.yaml,*.md]
 indent_style = space
 indent_size = 2
 

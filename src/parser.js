@@ -42,13 +42,13 @@ module.exports = (function() {
         peg$c3 = { type: "literal", value: "\\\\", description: "\"\\\\\\\\\"" },
         peg$c4 = "\\",
         peg$c5 = { type: "literal", value: "\\", description: "\"\\\\\"" },
-        peg$c6 = "{{",
-        peg$c7 = { type: "literal", value: "{{", description: "\"{{\"" },
-        peg$c8 = { type: "any", description: "any character" },
-        peg$c9 = { type: "other", description: "Substitution start" },
+        peg$c6 = { type: "any", description: "any character" },
+        peg$c7 = { type: "other", description: "Substitution start" },
+        peg$c8 = "((",
+        peg$c9 = { type: "literal", value: "((", description: "\"((\"" },
         peg$c10 = { type: "other", description: "Substitution end" },
-        peg$c11 = "}}",
-        peg$c12 = { type: "literal", value: "}}", description: "\"}}\"" },
+        peg$c11 = "))",
+        peg$c12 = { type: "literal", value: "))", description: "\"))\"" },
         peg$c13 = " ",
         peg$c14 = { type: "literal", value: " ", description: "\" \"" },
         peg$c15 = "\t",
@@ -400,13 +400,7 @@ module.exports = (function() {
           if (peg$silentFails === 0) { peg$fail(peg$c5); }
         }
         if (s1 !== peg$FAILED) {
-          if (input.substr(peg$currPos, 2) === peg$c6) {
-            s2 = peg$c6;
-            peg$currPos += 2;
-          } else {
-            s2 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c7); }
-          }
+          s2 = peg$parseSubStart();
           if (s2 !== peg$FAILED) {
             s1 = [s1, s2];
             s0 = s1;
@@ -422,13 +416,7 @@ module.exports = (function() {
           s0 = peg$currPos;
           s1 = peg$currPos;
           peg$silentFails++;
-          if (input.substr(peg$currPos, 2) === peg$c6) {
-            s2 = peg$c6;
-            peg$currPos += 2;
-          } else {
-            s2 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c7); }
-          }
+          s2 = peg$parseSubStart();
           peg$silentFails--;
           if (s2 === peg$FAILED) {
             s1 = void 0;
@@ -442,7 +430,7 @@ module.exports = (function() {
               peg$currPos++;
             } else {
               s2 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c8); }
+              if (peg$silentFails === 0) { peg$fail(peg$c6); }
             }
             if (s2 !== peg$FAILED) {
               s1 = [s1, s2];
@@ -465,17 +453,17 @@ module.exports = (function() {
       var s0, s1;
 
       peg$silentFails++;
-      if (input.substr(peg$currPos, 2) === peg$c6) {
-        s0 = peg$c6;
+      if (input.substr(peg$currPos, 2) === peg$c8) {
+        s0 = peg$c8;
         peg$currPos += 2;
       } else {
         s0 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c7); }
+        if (peg$silentFails === 0) { peg$fail(peg$c9); }
       }
       peg$silentFails--;
       if (s0 === peg$FAILED) {
         s1 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c9); }
+        if (peg$silentFails === 0) { peg$fail(peg$c7); }
       }
 
       return s0;
@@ -1221,7 +1209,7 @@ module.exports = (function() {
               peg$currPos++;
             } else {
               s2 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c8); }
+              if (peg$silentFails === 0) { peg$fail(peg$c6); }
             }
             if (s2 !== peg$FAILED) {
               s1 = [s1, s2];
@@ -1326,7 +1314,7 @@ module.exports = (function() {
               peg$currPos++;
             } else {
               s2 = peg$FAILED;
-              if (peg$silentFails === 0) { peg$fail(peg$c8); }
+              if (peg$silentFails === 0) { peg$fail(peg$c6); }
             }
             if (s2 !== peg$FAILED) {
               s1 = [s1, s2];
@@ -1401,33 +1389,33 @@ module.exports = (function() {
             	type:type, value:value
             };
         }
-        
+
         function TT(type, value_) {
         	var value = value_ || {};
             value.type = type;
-            
+
             return value;
         }
-        
+
         function rest(array, index) {
         	if (! Array.isArray(array)) {
             	return;
             }
-            
+
             return array.map(item => item[index]);
         }
-        
+
         function restr(array, indexes) {
         	if (! Array.isArray(array)) {
             	return;
             }
-            
+
             if (indexes.length > 1) {
             	return array.map(item => restr(item, indexes.slice(1)))
             }
             return array.map(item => item[indexes[0]]);
         }
-        
+
         function concat(array) {
         	return Array.prototype.concat.apply([], array);
         }

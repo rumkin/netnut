@@ -4,7 +4,7 @@ params:
     node_version: 5
 actions:
     - label: Run test task
-      exec: echo {{ test_param }}
+      exec: echo (( test_param ))
 
     - label: Run test task
-      exec: echo {{ node_version }}
+      exec: echo (( node_version ))
