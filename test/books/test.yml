@@ -2,6 +2,19 @@ plugins:
     - label: Test output plugin
       log: Hello, world
 
+if_else:
+    - label: Get value
+      prompt:
+        var: todo
+        message: Would you do this [Y/n]
+        default: false
+
+    - if: (( todo | eq 'Y' ))
+      then:
+          - print: text="TODO"
+      else:
+          - print: text="NOT TODO"
+
 prompt:
     - env: user="User"
     - env: {system: {user: (( user )) }}
@@ -14,7 +27,6 @@ prompt:
         var: user
         message: Who are you?
         default: (( system.user ))
-      text: (( hello ))
 
     - label: Output with attributes
       print: text="Hello (( user ))"

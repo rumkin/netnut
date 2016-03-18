@@ -34,6 +34,7 @@ function Netnut(options_) {
     this.commands = _.extend({}, this.commands, options.commands);
     this.context = _.extend(context, options.context);
     this.compiler = options.compiler || new expr.Compiler();
+    Object.assign(this.compiler.filters, this.filters);
 }
 
 Netnut.LocalShell = LocalShell;
@@ -44,6 +45,7 @@ Netnut.prototype.run = function (hostName, roleName, bookName, taskName, context
     var role = this.getRole(roleName);
     var tasks = this.getBookTask(bookName, taskName);
     var stack = [];
+
 
     var session = {
         ended: false,
@@ -244,11 +246,14 @@ Netnut.prototype.commands = {
     },
     task(value, item, session) {
         value = session.eval(value);
-        if (! (value in this.tasks)) {
-            throw new Error(`Task ${value} not found`);
+
+        var book = this.books[session.book];
+
+        if (! (value in book)) {
+            throw new Error(`Task "${value}" not found`);
         }
 
-        session.stack.unshift(...this.tasks[value].actions);
+        session.stack.unshift(...book[value]);
         return;
     },
     prompt(value_, item, session){
@@ -264,7 +269,7 @@ Netnut.prototype.commands = {
         return new Promise((resolve, reject) => {
             prompt.get({
                 properties: {
-                    [attrs.var]: {
+                    value: {
                         message: attrs.message
                     }
                 }
@@ -273,7 +278,7 @@ Netnut.prototype.commands = {
                     reject(err);
                 } else {
 
-                    session.set(attrs.var, result[attrs.var] || attrs.default || '');
+                    session.set(attrs.var, result.value || attrs.default || '');
                     resolve();
                 }
             });
@@ -289,7 +294,7 @@ Netnut.prototype.commands = {
                 return;
             }
 
-            if (!_.isObject(target[segment])) {
+            if (path.length && !_.isObject(target[segment])) {
                 return;
             }
 
@@ -299,9 +304,48 @@ Netnut.prototype.commands = {
         console.log(target);
     },
     print(value, item, session) {
-        var attrs = session.attrs(session.eval(value));
-        console.log(attrs.text);
+        console.log(session.eval);
+    },
+    'if'(value_, action, session) {
+        var value = session.eval(value_);
+
+        if (value !== 'true') {
+            session.stack.unshift(...action.then);
+        } else {
+            session.stack.unshift(...action.else);
+        }
+    },
+    exit: function(value_, action, session) {
+        session.stack.length = 0;
     }
+};
+
+Netnut.prototype.filters = {
+    'eq'(a, b) {
+        return a == b;
+    },
+    'neq'(a, b) {
+        return a != b;
+    },
+    'gt'(a, b) {
+        return a > b;
+    },
+    'gte'(a, b) {
+        return a >= b;
+    },
+    'lt'(a, b) {
+        return a < b;
+    },
+    'lte'(a, b) {
+        return a <= b;
+    },
+    'isTrue'(a) {
+        return !!a;
+    },
+    'isFalse'(a) {
+        console.log('is !a', a, !a);
+        return !a;
+    },
 };
 
 Netnut.prototype.eval = function (value, locals) {
@@ -313,6 +357,8 @@ Netnut.prototype.eval = function (value, locals) {
             k => result[k] = this.eval(value[k], locals)
         );
         return result;
+    } else if (typeof value === 'boolean') {
+        return value;
     } else {
         throw new Error(`Invalid value: ${value}`);
     }

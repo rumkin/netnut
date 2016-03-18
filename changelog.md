@@ -1,9 +1,13 @@
 # Changelog
 
-### v0.4
+### v0.4.3
 * Change candy template substitution from `{{` and `}}` to `((` and `))`. It
   solves yaml syntax conflict for inline objects. Now constructions
   like `prop: (( var_name ))` will work. And even: `prop: {prop: (( variable )) }`.
+* Add `if` action.
+* Add default filters: `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `isTrue`, `isFalse`.
+* Fix `task` command.
+* Fix `print` command.
 
 ### v0.3.13
 * Add inline attributes parser.

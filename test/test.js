@@ -45,7 +45,7 @@ var args = process.argv.slice(2);
 
 if (! args.length) {
     // args = ['--host=test', '--role=test', '--book=initialize', '--task=test-env', '--debug'];
-    args = ['--host=test', '--role=test', '--book=test', '--task=prompt', '--dir=' + __dirname];
+    args = ['--host=test', '--role=test', '--book=test', '--task=if_else', '--dir=' + __dirname];
 }
 
 var child = spawn('node', ['../netnut.js', ...args], {
