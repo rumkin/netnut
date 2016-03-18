@@ -1,8 +1,11 @@
 # Changelog
 
-### v0.4.5
+### v0.4.6
 * Prevent equity `ifFalse` from producing output.
 * Make `if` branches to be empty.
+* Fix `if` command.
+* Fix `print` command.
+* Update `dump` command.
 
 ### v0.4.3
 * Change candy template substitution from `{{` and `}}` to `((` and `))`. It
@@ -11,7 +14,8 @@
 * Add `if` action.
 * Add default filters: `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `isTrue`, `isFalse`.
 * Fix `task` command.
-* Fix `print` command.
+* Update `print` command.
+* Fix `dump` command.
 
 ### v0.3.13
 * Add inline attributes parser.

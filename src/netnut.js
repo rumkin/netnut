@@ -9,6 +9,7 @@ var SshShell = require('./ssh-shell.js');
 var chalk = require('chalk');
 var attrParser = require('../lib/attrs-parser.js');
 var prompt = require('prompt');
+const inspect = require('util').inspect;
 
 require('./promise-utils.js');
 
@@ -285,31 +286,34 @@ Netnut.prototype.commands = {
         });
     },
     dump(value, task, session) {
-        var path = value.split('\.');
+        var varname = session.eval(value.trim());
+        var path = varname.split('\.');
         var target = session.context;
 
         while (path.length) {
             let segment = path.shift();
             if (! (segment in target)) {
-                return;
+                target = undefined;
+                break;
             }
 
             if (path.length && !_.isObject(target[segment])) {
-                return;
+                target = undefined;
+                break;
             }
 
             target = target[segment];
         }
 
-        console.log(target);
+        console.log(varname, chalk.grey('='), inspect(target, {colors: true}));
     },
     print(value, item, session) {
-        console.log(session.eval);
+        console.log(session.eval(value));
     },
     'if'(value_, action, session) {
         var value = session.eval(value_);
 
-        if (value !== 'true') {
+        if (value === 'true') {
             if (action.then) {
                 session.stack.unshift(...action.then);
             }
