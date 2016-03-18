@@ -310,9 +310,13 @@ Netnut.prototype.commands = {
         var value = session.eval(value_);
 
         if (value !== 'true') {
-            session.stack.unshift(...action.then);
+            if (action.then) {
+                session.stack.unshift(...action.then);
+            }
         } else {
-            session.stack.unshift(...action.else);
+            if (action.else) {
+                session.stack.unshift(...action.else);
+            }
         }
     },
     exit: function(value_, action, session) {
@@ -343,7 +347,6 @@ Netnut.prototype.filters = {
         return !!a;
     },
     'isFalse'(a) {
-        console.log('is !a', a, !a);
         return !a;
     },
 };

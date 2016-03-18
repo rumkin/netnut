@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.4.5
+* Prevent equity `ifFalse` from producing output.
+* Make `if` branches to be empty.
+
 ### v0.4.3
 * Change candy template substitution from `{{` and `}}` to `((` and `))`. It
   solves yaml syntax conflict for inline objects. Now constructions

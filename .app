@@ -1,5 +1,5 @@
 name: netnut
-version: 0.4.3
+version: 0.4.5
 description: Remote shell controller tool
 bin: netnut.js
 
