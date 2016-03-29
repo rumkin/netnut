@@ -1,5 +1,11 @@
 # Changelog
 
+### v0.4.10
+* Update directory lookup to search all entries of file up the tree.
+* Update attrs parser to support `$ _ .` signs in attribure name.
+* Add local variable command.
+* Add exec result variable `$exec`. 
+
 ### v0.4.6
 * Prevent equity `ifFalse` from producing output.
 * Make `if` branches to be empty.
