@@ -213,6 +213,8 @@ Netnut.prototype.commands = {
                     process.stdout.write(result.out + '');
                 }
 
+                session.context['$exec'] = result.out + '';
+
                 if (result.code) {
                     // TODO Process error
                     throw new Error('Execution failed');
@@ -229,6 +231,17 @@ Netnut.prototype.commands = {
 
         _.keys(attrs).forEach((name) => {
             session.set(name, attrs[name]);
+        });
+    },
+    local(value, item, session) {
+        value = session.eval(value);
+
+        var attrs = _.isObject(value)
+            ? value
+            : session.attrs(value);
+
+        _.keys(attrs).forEach((name) => {
+            session.context[name] = attrs[name];
         });
     },
     upload(value, item, session) {
