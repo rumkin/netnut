@@ -20,7 +20,7 @@ Attr
     / name:AttrName { return {name:text(), value: true}; }
 
 AttrName
-	= [A-Za-z] [A-Za-z0-9_-]* { return text(); }
+	= [A-Za-z_$] [A-Za-z0-9_.$-]* { return text(); }
 
 AttrValue
     = Number
