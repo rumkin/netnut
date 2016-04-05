@@ -5,6 +5,7 @@ var Shell = require('./shell.js');
 var ssh2 = require('ssh2');
 var path = require('path');
 var fs = require('fs');
+const IOString = require('./io-string.js');
 
 module.exports = SshShell;
 
@@ -95,6 +96,7 @@ SshShell.prototype.uploadBuffer = function (source, destination) {
 
 SshShell.prototype.uploadFile = function (source, destination) {
     var local = path.resolve(process.cwd(), source);
+    // FIXME (rumkin) replace basename with removing path's base.
     var remote = path.resolve(this.cwd, destination || path.basename(source));
 
     return new Promise((resolve, reject) =>
@@ -106,6 +108,34 @@ SshShell.prototype.uploadFile = function (source, destination) {
 
             try {
                 sftp.fastPut(local, remote, (error) => {
+                    if (error) {
+                        reject(err);
+                        return;
+                    }
+
+                    resolve();
+                });
+            } catch (error) {
+                reject(error);
+            }
+        })
+    );
+};
+
+SshShell.prototype.downloadFile = function(source, destination) {
+    var local = path.resolve(this.cwd, source);
+    // FIXME (rumkin) replace basename with removing path's base.
+    var remote = path.resolve(process.cwd(), destination || path.basename(local));
+
+    return new Promise((resolve, reject) =>
+        this.conn.sftp((error, sftp) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            try {
+                sftp.fastGet(local, remote, (error) => {
                     if (error) {
                         reject(err);
                         return;
@@ -147,10 +177,10 @@ SshShell.prototype.exec = function (cmd, options) {
                 return;
             }
 
-            var out = [];
+            var io = [];
 
-            out.toString = function () {
-                return this.map(item => item.chunk).join('');
+            io.toString = function () {
+                return this.join('');
             };
 
             stream.on('close', (code, signal) => {
@@ -158,12 +188,12 @@ SshShell.prototype.exec = function (cmd, options) {
                     cmd,
                     code,
                     signal,
-                    out
+                    io
                 });
             });
 
-            stream.on('data', chunk => out.push({c: 1, chunk}));
-            stream.stderr.on('data', chunk => out.push({c: 2, chunk}));
+            stream.on('data', chunk => io.push(new IOString(chunk, 1)));
+            stream.stderr.on('data', chunk => io.push(new IOString(chunk, 2)));
         });
     });
 };

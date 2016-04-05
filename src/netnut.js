@@ -210,10 +210,10 @@ Netnut.prototype.commands = {
             value = session.eval(value);
             return this.shells.remote.exec(value).then((result) => {
                 if (this.debug) {
-                    process.stdout.write(result.out + '');
+                    process.stdout.write(result.io + '');
                 }
 
-                session.context['$exec'] = result.out + '';
+                session.context['$exec'] = result.io + '';
 
                 if (result.code) {
                     // TODO Process error

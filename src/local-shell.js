@@ -5,6 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var childprocess = require('child_process');
 var _ = require('underscore');
+const IOString = require('./io-string.js');
 
 module.exports = LocalShell;
 
@@ -43,22 +44,23 @@ LocalShell.prototype.exec = function (cmd, options) {
         this.emit('exec', cmd);
         var child = childprocess.exec(cmd, {cwd, env});
 
-        var out = [];
+        var io = [];
 
-        out.toString = function () {
-            return this.map(item => item.chunk).join('');
+        io.toString = function () {
+            return this.join('');
         };
 
-        child.stdout.on('data', chunk => out.push({c: 1, chunk}));
-        child.stderr.on('data', chunk => out.push({c: 2, chunk}));
+        child.stdout.on('data', chunk => io.push(new IOString(chunk, 1)));
+        child.stderr.on('data', chunk => io.push(new IOString(chunk, 2)));
         child.on('close', (code) => {
-            resolve({code, out});
+            resolve({code, io});
         });
     });
 }
 
 LocalShell.prototype.uploadFile = function (source, destination) {
     var local = path.resolve(process.cwd(), source);
+    // FIXME (rumkin) replace basename with removing path's base.
     var remote = path.resolve(this.cwd, destination || path.basename(local));
 
     return new Promise((resolve, reject) => {
@@ -69,6 +71,22 @@ LocalShell.prototype.uploadFile = function (source, destination) {
         ;
     }).then(() => {
         this.emit('uploaded', local, remote)
+    });
+};
+
+LocalShell.prototype.downloadFile = function(source, destination) {
+    var local = path.resolve(this.cwd, source);
+    // FIXME (rumkin) replace basename with removing path's base.
+    var remote = path.resolve(process.cwd(), destination || path.basename(local));
+
+    return new Promise((resolve, reject) => {
+        fs.createReadStream(local)
+        .pipe(fs.createWriteStream(remote))
+        .on('finish', resolve)
+        .on('error', reject)
+        ;
+    }).then(() => {
+        this.emit('downloaded', local, remote)
     });
 };
 

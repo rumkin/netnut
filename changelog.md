@@ -1,10 +1,14 @@
 # Changelog
 
+### v0.4.12
+* Update shells output to use i/o strings.
+* Add `downloadFile` method into shells.
+
 ### v0.4.10
 * Update directory lookup to search all entries of file up the tree.
 * Update attrs parser to support `$ _ .` signs in attribure name.
 * Add local variable command.
-* Add exec result variable `$exec`. 
+* Add exec result variable `$exec`.
 
 ### v0.4.6
 * Prevent equity `ifFalse` from producing output.
